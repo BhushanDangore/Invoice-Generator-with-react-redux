@@ -1,9 +1,7 @@
 const mongoose = require("mongoose");
-let mongoKeylocal = require("../keys/keys").mongo;
+const mongoURI = require("../keys/keys").mongoURI;
 
-mongoKey = process.env.mongoKey || mongoKeylocal;
-
-mongoose.connect(mongoKey, {useNewUrlParser: true, useUnifiedTopology: true} , err => {
+mongoose.connect(mongoURI, {useNewUrlParser: true, useUnifiedTopology: true} , err => {
     err ? console.log("Error in connection to database" + err) : console.log("Connected to database")
 });
 
