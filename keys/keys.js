@@ -1,6 +1,4 @@
 if(process.env.NODE_ENV == 'production'){
-    console.log("lavda");
-    
     const keys = {
         google: {
             ClientID: process.env.ClientID,
