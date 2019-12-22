@@ -3,6 +3,8 @@ const schema = mongoose.Schema;
 
 const user = new schema({
     googleID: Number,
+    facebookID: Number,
+    profilePic: String,
     name: String,
     email: String
 })
