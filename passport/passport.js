@@ -44,8 +44,8 @@ passport.use(new googleStrategy({
 //////         Facebook Auth Strategy Configure
 
 passport.use(new facebookStrategy({
-    clientID: keys.facebook.ClientID,
-    clientSecret: keys.facebook.ClientSecret,
+    clientID: keys.facebook.ClientIDF,
+    clientSecret: keys.facebook.ClientSecretF,
     callbackURL: "/api/login/facebook/callback"
 }, (accessToken, refreshToken, Profile, callback) => {
     console.log(Profile);

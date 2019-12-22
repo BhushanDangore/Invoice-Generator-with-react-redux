@@ -4,6 +4,10 @@ if(process.env.NODE_ENV == 'production'){
             ClientID: process.env.ClientID,
             ClientSecret: process.env.ClientSecret
         },
+        facebook: {
+            ClientIDF : process.env.ClientIDF,
+            ClientSecretF : process.env.ClientSecretF
+        },
         mongoURI: process.env.mongoURI,
     }
     module.exports = keys
