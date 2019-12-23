@@ -1,0 +1,1 @@
+Task1: cd client/ && npm install && npm run build && cd .. && npm install && npm run start
