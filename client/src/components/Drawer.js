@@ -5,6 +5,7 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import { Link } from 'react-router-dom';
 import { withStyles } from '@material-ui/core/styles';
+import { connect } from 'react-redux';
 
 const styles = {
     root: {
@@ -27,14 +28,24 @@ class Drawer extends Component {
             onKeyDown={this.props.toggleDrawer(side, false)}
         >
             <List>
-                <Link to="/profile" className={classes.linkFix}>
-                    <ListItem button>
-                        <ListItemText primary="Profile" />
-                    </ListItem>
-                </Link>
                 <Link to="/dashboard" className={classes.linkFix}>
                     <ListItem button>
                         <ListItemText primary="Dashboard" />
+                    </ListItem>
+                </Link>
+                <Link to="/createinvoice" className={classes.linkFix}>
+                    <ListItem button >
+                        <ListItemText primary="Create Invoice" />
+                    </ListItem>
+                </Link>
+                <Link to="/viewinvoices" className={classes.linkFix}>
+                    <ListItem button>
+                        <ListItemText primary="View Invoices" />
+                    </ListItem>
+                </Link>
+                <Link to="/profile" className={classes.linkFix}>
+                    <ListItem button>
+                        <ListItemText primary="Profile" />
                     </ListItem>
                 </Link>
             </List>
@@ -59,4 +70,8 @@ class Drawer extends Component {
 
 }
 
-export default withStyles(styles)(Drawer);
+const mapStateToProps = (store) => {
+    return store;
+}
+
+export default connect(mapStateToProps)(withStyles(styles)(Drawer));

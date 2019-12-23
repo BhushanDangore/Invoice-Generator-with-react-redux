@@ -1,4 +1,4 @@
-import { GetUser, RemoveUser } from './types';
+import { GetUser, RemoveUser, CreateInvoice } from './types';
 import axios from 'axios';
 
 export const getUser = () => {
@@ -7,6 +7,13 @@ export const getUser = () => {
             .then(res => {
                 dispatch({ type: GetUser, payload: res.data })}
             )
+    }
+}
+
+export const createInvoice = (invoice) => {
+    return {
+        type: CreateInvoice,
+        payload: invoice,
     }
 }
 

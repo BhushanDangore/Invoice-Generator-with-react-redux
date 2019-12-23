@@ -11,19 +11,19 @@ const styles = {
     },
 }
 
-class Dashboard extends Component {
-    state = {  }
+
+class ViewInvoices extends Component {
     render() { 
-        const {classes} = this.props;
+        const { classes } = this.props;
         return ( <React.Fragment>
             <Container>
                 <Paper className={classes.root}>
                     <Typography variant="h5" component="h3">
-                        Dashboard
+                        Invoice
                     </Typography>
                     <Divider style = { {marginTop: 15, marginBottom: 15} }/>
                     <Typography component="p">
-                    
+                        {/* { this.props.user == null ? null : getProfile(this.props.user) } */}
                     </Typography>
                 </Paper>
             </Container>
@@ -33,4 +33,4 @@ class Dashboard extends Component {
  
 const mapStateToProps = store => store;
 
-export default connect(mapStateToProps)(withStyles(styles)(Dashboard));
+export default connect(mapStateToProps)(withStyles(styles)(ViewInvoices));

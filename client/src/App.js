@@ -11,6 +11,9 @@ import {
 } from "react-router-dom";
 import { connect } from 'react-redux';
 import { getUser } from './action'
+import CreateInvoice from './components/Users/CreateInvoice';
+import ViewInvoices from './components/Users/ViewInvoices';
+
 
 class App extends Component {
     constructor(props) {
@@ -39,6 +42,8 @@ class App extends Component {
                     <Route exact path="/login"> <LoginForm /> </Route>
                     <Route exact path="/dashboard"> <Dashboard /> </Route> 
                     <Route exact path="/profile"> <Profile /> </Route>
+                    <Route exact path="/createinvoice"> <CreateInvoice /> </Route>
+                    <Route exact path="/viewinvoices"> <ViewInvoices /> </Route>
                 </Router>
             </React.Fragment>
         );

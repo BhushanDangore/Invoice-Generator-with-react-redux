@@ -11,6 +11,7 @@ import createMuiTheme from '@material-ui/core/styles/createMuiTheme'
 import Link from '@material-ui/core/Link';
 import { withRouter } from 'react-router';
 import { connect } from 'react-redux';
+import { Link as RouterLink } from 'react-router-dom';
 
 const theme = createMuiTheme();
 
@@ -58,9 +59,9 @@ const LoginButton = props => {
             <Button variant="outlined" color="default" >Logout</Button>
         </Link>)
     else
-    return (<Link href="/api/login/google" className = {props.classes.linkFix}>
+    return (<RouterLink to="/login" className = {props.classes.linkFix}>
             <Button variant="outlined" color="default" >Login</Button>
-        </Link>)
+        </RouterLink>)
 } 
 
 NavBar.propTypes = {
