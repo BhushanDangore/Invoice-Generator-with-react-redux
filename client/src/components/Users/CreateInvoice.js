@@ -20,6 +20,7 @@ import { withStyles } from '@material-ui/core/styles';
 import AlertDialog from '../utils/Dialog';
 import { createInvoice } from '../../action';
 import MaterialTable, { MTableEditField, MTableCell } from 'material-table';
+import Editable from './ItemTable';
 
 const theme = createMuiTheme();
 const styles = {
@@ -72,7 +73,7 @@ class CreateInvoice extends Component {
             { title: 'Item', field: 'item', },
             { title: 'Quantity', field: 'quantity', type: 'numeric', },
             { title: 'Cost/Item', field: 'cost', type: 'numeric', },
-            { title: 'Total', field: 'total', type: 'numeric', },
+            { title: 'Total', field: 'total', type: 'numeric', eidtable },
         ],
     }
 
