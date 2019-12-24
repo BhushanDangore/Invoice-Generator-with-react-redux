@@ -13,6 +13,7 @@ passport.use(new googleStrategy({
     callbackURL: "/api/login/google/callback"
 }, (accessToken, refreshToken, Profile, callback) => {
 
+    console.log(accessToken,"\n\n", refreshToken);
     users.findOne({
         "googleID": Profile.id
     }, (err, user) => {

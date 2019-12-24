@@ -1,105 +1,50 @@
 import React from 'react';
-import MaterialTable, { MTableEditField } from 'material-table';
-import { makeStyles } from '@material-ui/core/styles';
-import AlertDialog from './../utils/Dialog';
-
-const useStyles = makeStyles({
-  customWidth: {
-    width: "100%"
-  },
-});
-
-export default function MaterialTableDemo(props) {
-    const classes = useStyles();
-    const [state, setState] = React.useState({
-        dialogOpen: false,
+import MaterialTable from 'material-table';
+ 
+class Editable extends React.Component {
+    constructor(props) {
+      super(props);
+      this.state = {
         columns: [
-            { title: 'Item', field: 'item', },
-            { title: 'Quantity', field: 'quantity', type: 'numeric', },
-            { title: 'Cost/Item', field: 'cost', type: 'numeric', },
-            { title: 'Total', field: 'total', editable: "never", type: 'numeric', },
+          { title: 'Name', field: 'name' },
+          { title: 'Surname', field: 'surname', initialEditValue: 'initial edit value' },
+          { title: 'Birth Year', field: 'birthYear', type: 'numeric' },
+          {
+            title: 'Birth Place',
+            field: 'birthCity',
+            lookup: { 34: 'İstanbul', 63: 'Şanlıurfa' },
+          },
         ],
-        data: [],
-    });
-    const handleClose = () => {
-        setState({dialogOpen: false, columns: state.columns, data: state.data});
+        data: [
+          { name: 'Mehmet', surname: 'Baran', birthYear: 1987, birthCity: 63 },
+          { name: 'Zerya Betül', surname: 'Baran', birthYear: 2017, birthCity: 34 },
+        ]
+      }
     }
-    return (
-        <React.Fragment>
+  
+    render() {
+      return (
         <MaterialTable
-            title="Items"
-            columns={state.columns}
-            data={state.data}
-            editable={{
-                onRowAdd: newData =>
-                    new Promise(resolve => {
-                        setTimeout(() => {
-                            resolve();
-                            setState(prevState => {
-                                const data = [...prevState.data];
-                                if(!newData.cost || !newData.quantity) 
-                                setState({...prevState, dialogOpen: true})
-                                else{    
-                                    newData.total = newData.cost * newData.quantity;
-                                    data.push(newData);
-                                    props.handleDateChange(data);
-                                    return { ...prevState, data };
-                                }
-                                return { ...prevState, data }
-                            });
-                        }, 200);
-                    }),
-                onRowUpdate: (newData, oldData) =>
-                    new Promise(resolve => {
-                        setTimeout(() => {
-                            resolve();
-                            if (oldData) {
-                                setState(prevState => {
-                                    const data = [...prevState.data];
-                                    if(!newData.cost || !newData.quantity) 
-                                    setState({...prevState, dialogOpen: true})
-                                    else{    
-                                        newData.total = newData.cost * newData.quantity;
-                                        data[data.indexOf(oldData)] = newData;
-                                        props.handleDateChange(data);
-                                        return { ...prevState, data };
-                                    }
-                                    return { ...prevState, data };
-                                });
-                            }
-                        }, 200);
-                    }),
-                onRowDelete: oldData =>
-                    new Promise(resolve => {
-                        setTimeout(() => {
-                            resolve();
-                            setState(prevState => {
-                                const data = [...prevState.data];
-                                data.splice(data.indexOf(oldData), 1);
-                                props.handleDateChange(data);
-                                return { ...prevState, data };
-                            });
-                        }, 200);
-                    }),
-            }}
-            options = {{
-                rowStyle: {
-                  backgroundColor: '#EEE',
-                },
-                actionsColumnIndex: 3,
-                search: false,
-                paging: false,
-                minBodyHeight: 350,
-                loadingType: "linear",
-            }}
-            components={{
-                EditField: props => (
-                    <MTableEditField {...props} className = {classes.customWidth} />
-                )
-            }}
-        >
-        </MaterialTable>
-        <AlertDialog text = {"Please Enter All Data....."} title = {"Invalid Input"} open = {state.dialogOpen} handleClose = {handleClose}/>
-        </React.Fragment>
-    );
-}
+          title="Editable Preview"
+          columns={this.state.columns}
+          data={this.state.data}
+          editable={{
+            onRowUpdate: (newData, oldData) =>
+              new Promise((resolve, reject) => {
+                setTimeout(() => {
+                  {
+                    const data = this.state.data;
+                    const index = data.indexOf(oldData);
+                    data[index] = newData;
+                    this.setState({ data }, () => resolve());
+                  }
+                  resolve()
+                }, 1000)
+              }),
+          }}
+        />
+      )
+    }
+  }
+
+export default  Editable
