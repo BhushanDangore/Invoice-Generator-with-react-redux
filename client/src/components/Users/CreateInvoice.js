@@ -62,16 +62,10 @@ class CreateInvoice extends Component {
         openDialog: false,
         nameOfCustomer: "",
         date: new Date(),
-        items: [{ item: 'Mehmet', cost: 10, quantity: 7, total: null }],
-        tax: 0,
-        total: 0,
-        roundoff: 0,
-        columns: [
-            { title: 'Item', field: 'item', },
-            { title: 'Quantity', field: 'quantity', type: 'numeric', },
-            { title: 'Cost/Item', field: 'cost', type: 'numeric', },
-            { title: 'Total', field: 'total', type: 'numeric', editable: 'never' },
-        ],
+        items: [],
+        invoiceTax: 0,
+        invoiceTotal: 0,
+        invoiceRoundoff: 0,
     }
 
     handleClose = () => {
@@ -79,14 +73,15 @@ class CreateInvoice extends Component {
     }
 
     feedDataIntoStore = () => {
-        let { nameOfCustomer, date, items } = this.state;
-        const storeData = { nameOfCustomer, date, items };
+        const { nameOfCustomer, date, items, invoiceTotal, invoiceTax, invoiceRoundoff } = this.state;
+        const storeData = { nameOfCustomer, date, items, invoiceTotal, invoiceTax, invoiceRoundoff };
         if (!nameOfCustomer || items.length === 0 || !date) this.setState({ openDialog: true });
+        console.log(storeData)
         this.props.dispatch(createInvoice(storeData));
     }
 
     handleItemListData = (data) => {
-        setTimeout(() => this.setState({ total: data.total, tax: data.tax, roundoff: data.roundoff }), 500);
+        setTimeout(() => this.setState({ invoiceTotal: data.total, invoiceTax: data.tax, invoiceRoundoff: data.roundoff, items: data.items }), 500);
     }
 
     handleNameChange = (e) => {
@@ -139,7 +134,7 @@ class CreateInvoice extends Component {
                     />
                     </MuiPickersUtilsProvider>
                    
-                    <MaterialTable tax = {this.state.tax} total = {this.state.total} roundoff = {this.state.roundoff} handleItemListData = {this.handleItemListData}/>
+                    <MaterialTable tax = {this.state.invoiceTax} total = {this.state.invoiceTotal} roundoff = {this.state.invoiceRoundoff} handleItemListData = {this.handleItemListData}/>
         
                     <AlertDialog text = {"Please Enter All Data....."} title = {"Invalid Input"} open = {this.state.openDialog} handleClose = {this.handleClose}/>
 

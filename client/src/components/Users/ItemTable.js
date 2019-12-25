@@ -58,10 +58,13 @@ export default function MaterialTableDemo(props) {
                             resolve();
                             setState(prevState => {
                                 const data = [...prevState.data];
+                                console.log(data);
                                 if (!newData.cost || !newData.quantity) {
                                     setState({ ...prevState, dialogOpen: true });
                                 }
                                 else {
+                                    newData.cost = parseFloat(newData.cost);
+                                    newData.quantity = parseFloat(newData.quantity);
                                     newData.total = parseFloat((newData.cost * newData.quantity).toFixed(2));
                                     data.push(newData);
                                     handleItemListData(calculateValues(data));
@@ -82,7 +85,9 @@ export default function MaterialTableDemo(props) {
                                     }
                                     else{
                                         const data = [...prevState.data];
-                                        newData.total = parseFloat((newData.cost * newData.quantity).toFixed(2));
+                                        newData.cost = parseFloat(newData.cost);
+                                        newData.quantity = parseFloat(newData.quantity);
+                                        newData.total = (newData.cost * newData.quantity).toFixed(2);
                                         data[data.indexOf(oldData)] = newData;
                                         handleItemListData(calculateValues(data));
                                         return { ...prevState, data };
@@ -143,12 +148,10 @@ export default function MaterialTableDemo(props) {
 }
 function calculateValues(data) {
     let newtotal = 0, newtax = 0, newroundoff = 0;
-    
-    data.forEach((item) => { newtotal = newtotal + parseFloat(item.total, 10); });
-    newtotal.toFixed(2);
+    data.forEach((item) =>  newtotal = newtotal + item.total );
+    newtotal = parseFloat(newtotal.toFixed(2))
     newtax = parseFloat(((newtotal / 100) * 28).toFixed(2));
     newroundoff = parseFloat((Math.round(newtotal + newtax) - (newtotal + newtax)).toFixed(2));
     newtotal = parseInt(Math.round(newtotal + newtax));
-    console.log(data, newtotal)
-    return { total: newtotal, tax: newtax, roundoff: newroundoff };
+    return { total: newtotal, tax: newtax, roundoff: newroundoff, items: data };
 }
