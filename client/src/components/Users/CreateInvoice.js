@@ -20,7 +20,7 @@ import { withStyles } from '@material-ui/core/styles';
 import AlertDialog from '../utils/Dialog';
 import { createInvoice } from '../../action';
 import MaterialTable, { MTableEditField, MTableCell } from 'material-table';
-import Editable from './ItemTable';
+import DisableFieldEditable from './ItemTable';
 
 const theme = createMuiTheme();
 const styles = {
@@ -73,7 +73,7 @@ class CreateInvoice extends Component {
             { title: 'Item', field: 'item', },
             { title: 'Quantity', field: 'quantity', type: 'numeric', },
             { title: 'Cost/Item', field: 'cost', type: 'numeric', },
-            { title: 'Total', field: 'total', type: 'numeric', eidtable },
+            { title: 'Total', field: 'total', type: 'numeric', editable: 'never' },
         ],
     }
 
@@ -248,6 +248,8 @@ class CreateInvoice extends Component {
                             ),
                         }}
                     />
+
+                    <DisableFieldEditable />
                     <AlertDialog text = {"Please Enter All Data....."} title = {"Invalid Input"} open = {this.state.openDialog} handleClose = {this.handleClose}/>
 
                     <Button variant="contained" color="primary" className={classes.button} onClick={this.feedDataIntoStore}>
