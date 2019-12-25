@@ -1,71 +1,154 @@
 import React from 'react';
-import MaterialTable from 'material-table';
+import MaterialTable, { MTableEditField, MTableCell } from 'material-table';
+import {
+    Box,
+    TableCell,
+    Typography,
+    Divider,
+    makeStyles,
+} from '@material-ui/core';
 
-export default function MaterialTableDemo() {
-  const [state, setState] = React.useState({
-    columns: [
-      { title: 'Name', field: 'name' },
-      { title: 'Surname', field: 'surname' },
-      { title: 'Birth Year', field: 'birthYear', type: 'numeric' },
-      {
-        title: 'Birth Place',
-        field: 'birthCity',
-        lookup: { 34: 'İstanbul', 63: 'Şanlıurfa' },
-      },
-    ],
-    data: [
-      { name: 'Mehmet', surname: 'Baran', birthYear: 1987, birthCity: 63 },
-      {
-        name: 'Zerya Betül',
-        surname: 'Baran',
-        birthYear: 2017,
-        birthCity: 34,
-      },
-    ],
-  });
+const useStyles = makeStyles({
+    button: {
+        marginTop: '20px',
+        padding: '10px'
+    },
+    customWidth: {
+        width: "100%"
+    },
+    flex: {
+        display: "flex",
+        justifyContent: "space-between",
+        padding: "0.8rem",
+    },
+    noBorder: {
+        borderBottom: "0px"
+    },
+    footerFix: {
+        display: "block",
+    },
+})
 
-  return (
-    <MaterialTable
-      title="Editable Example"
-      columns={state.columns}
-      data={state.data}
-      editable={{
-        onRowAdd: newData =>
-          new Promise(resolve => {
-            setTimeout(() => {
-              resolve();
-              setState(prevState => {
-                const data = [...prevState.data];
-                data.push(newData);
-                return { ...prevState, data };
-              });
-            }, 600);
-          }),
-        onRowUpdate: (newData, oldData) =>
-          new Promise(resolve => {
-            setTimeout(() => {
-              resolve();
-              if (oldData) {
-                setState(prevState => {
-                  const data = [...prevState.data];
-                  data[data.indexOf(oldData)] = newData;
-                  return { ...prevState, data };
-                });
-              }
-            }, 600);
-          }),
-        onRowDelete: oldData =>
-          new Promise(resolve => {
-            setTimeout(() => {
-              resolve();
-              setState(prevState => {
-                const data = [...prevState.data];
-                data.splice(data.indexOf(oldData), 1);
-                return { ...prevState, data };
-              });
-            }, 600);
-          }),
-      }}
-    />
-  );
+export default function MaterialTableDemo(props) {
+
+    let { tax, total, roundoff, handleItemListData } = props;
+
+    const classes = useStyles();
+
+    const [state, setState] = React.useState({
+        columns: [
+            { title: 'Item', field: 'item' },
+            { title: 'Quantity', field: 'quantity', type: 'numeric' },
+            { title: 'Cost/Item', field: 'cost', type: 'numeric' },
+            { title: 'total', field: 'total', type: 'numeric', editable: 'never' },
+        ],
+        data: [],
+        dialogOpen: false
+    });
+
+    return (
+        <MaterialTable
+            title="Items"
+            columns={state.columns}
+            data={state.data}
+            editable={{
+                onRowAdd: newData =>
+                    new Promise(resolve => {
+                        setTimeout(() => {
+                            resolve();
+                            setState(prevState => {
+                                const data = [...prevState.data];
+                                if (!newData.cost || !newData.quantity) {
+                                    setState({ ...prevState, dialogOpen: true });
+                                }
+                                else {
+                                    newData.total = parseFloat((newData.cost * newData.quantity).toFixed(2));
+                                    data.push(newData);
+                                    handleItemListData(calculateValues(data));
+                                    setState({ ...prevState, data });
+                                }
+                                return { ...prevState, data };
+                            });
+                        }, 200);
+                    }),
+                onRowUpdate: (newData, oldData) =>
+                    new Promise(resolve => {
+                        setTimeout(() => {
+                            resolve();
+                            if (oldData) {
+                                setState(prevState => {
+                                    if (!newData.cost || !newData.quantity) {
+                                        setState({ ...prevState, dialogOpen: true });
+                                    }
+                                    else{
+                                        const data = [...prevState.data];
+                                        newData.total = parseFloat((newData.cost * newData.quantity).toFixed(2));
+                                        data[data.indexOf(oldData)] = newData;
+                                        handleItemListData(calculateValues(data));
+                                        return { ...prevState, data };
+                                    }
+                                });
+                            }
+                        }, 200);
+                    }),
+                onRowDelete: oldData =>
+                    new Promise(resolve => {
+                        setTimeout(() => {
+                            resolve();
+                            setState(prevState => {
+                                const data = [...prevState.data];
+                                data.splice(data.indexOf(oldData), 1);
+                                handleItemListData(calculateValues(data));
+                                return { ...prevState, data };
+                            });
+                        }, 200);
+                    }),
+            }}
+            options={{
+                rowStyle: {
+                    backgroundColor: '#EEE',
+                },
+                actionsColumnIndex: 3,
+                search: false,
+                minBodyHeight: 300,
+                loadingType: "linear",
+            }}
+            components={{
+                Cell: props => (
+                    <MTableCell {...props} className={classes.noBorder} />
+                ),
+                EditField: props => (
+                    <MTableEditField {...props} className={classes.customWidth} />
+                ),
+                Pagination: props => (
+                    <TableCell colSpan={3} className={classes.footerFix}>
+                        <Box component="span" m={1} className={classes.flex}>
+                            <Typography variant="h6" component="span" align={"center"}>Tax Ammount: </Typography>
+                            <Typography variant="h6" component="span" align={"center"}>{tax}</Typography>
+                        </Box>
+                        <Divider variant="middle" />
+                        <Box component="span" m={1} className={classes.flex}>
+                            <Typography variant="h5" component="span" align={"center"}>Total Ammount: </Typography>
+                            <span style={{ display: "flex", flexDirection: "column", height: "3em", alignItems: "flex-end" }}>
+                                <Typography variant="button" component="span" align={"center"}><span>Round off.</span> <span>{roundoff}</span></Typography>
+                                <Typography variant="h5" component="span" align={"center"}>{total}</Typography>
+                            </span>
+                        </Box>
+                    </TableCell>
+                ),
+            }}
+        />
+    );
+
+}
+function calculateValues(data) {
+    let newtotal = 0, newtax = 0, newroundoff = 0;
+    
+    data.forEach((item) => { newtotal = newtotal + parseFloat(item.total, 10); });
+    newtotal.toFixed(2);
+    newtax = parseFloat(((newtotal / 100) * 28).toFixed(2));
+    newroundoff = parseFloat((Math.round(newtotal + newtax) - (newtotal + newtax)).toFixed(2));
+    newtotal = parseInt(Math.round(newtotal + newtax));
+    console.log(data, newtotal)
+    return { total: newtotal, tax: newtax, roundoff: newroundoff };
 }

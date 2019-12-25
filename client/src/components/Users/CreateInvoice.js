@@ -7,8 +7,6 @@ import {
     Divider,
     TextField,
     Button,
-    Box, 
-    TableCell,
 } from '@material-ui/core';
 import DateFnsUtils from '@date-io/date-fns';
 import {
@@ -19,8 +17,7 @@ import { connect } from 'react-redux';
 import { withStyles } from '@material-ui/core/styles';
 import AlertDialog from '../utils/Dialog';
 import { createInvoice } from '../../action';
-import MaterialTable, { MTableEditField, MTableCell } from 'material-table';
-import DisableFieldEditable from './ItemTable';
+import MaterialTable from './ItemTable';
 
 const theme = createMuiTheme();
 const styles = {
@@ -77,24 +74,19 @@ class CreateInvoice extends Component {
         ],
     }
 
-    // componentDidUpdate(){
-    //     // console.log(this.props.invoices)
-    // }
-
     handleClose = () => {
         this.setState({ openDialog: false })
     }
 
     feedDataIntoStore = () => {
-        const { nameOfCustomer, date, items } = this.state;
+        let { nameOfCustomer, date, items } = this.state;
         const storeData = { nameOfCustomer, date, items };
         if (!nameOfCustomer || items.length === 0 || !date) this.setState({ openDialog: true });
-        // console.log(storeData);
         this.props.dispatch(createInvoice(storeData));
     }
 
     handleItemListData = (data) => {
-        this.setState({ items: data.items, total: data.total, tax: data.tax, roundoff: data.roundoff })
+        setTimeout(() => this.setState({ total: data.total, tax: data.tax, roundoff: data.roundoff }), 500);
     }
 
     handleNameChange = (e) => {
@@ -146,110 +138,9 @@ class CreateInvoice extends Component {
                             }}
                     />
                     </MuiPickersUtilsProvider>
-                    {console.log(this.state.items)}
-                    <MaterialTable
-                        title="Items"
-                        enableRowDelete={true}
-                        enableRowAdd={true}
-                        columns={this.state.columns}
-                        data={this.state.items}
-                        editable={{
-                            onRowAdd: newData =>
-                                new Promise(resolve => {
-                                    setTimeout(() => {
-                                        resolve();
-                                        const newItems = this.state.items;
-                                        if (!newData.cost || !newData.quantity) {
-                                            this.setState({dialogOpen: true });
-                                            // handleDateChange({ items: state.items, total, tax, roundoff });
-                                        }
-                                        else {
-                                            let newtotal = 0, newtax = 0, newroundoff = 0;
-                                            newData.total = parseFloat((newData.cost * newData.quantity).toFixed(2));
-                                            newItems.push(newData);
-                                            newItems.forEach((item) => { newtotal = newtotal + parseFloat(item.total, 10) });
-                                            newtotal.toFixed(2);
-                                            newtax = parseFloat(((newtotal / 100) * 28).toFixed(2));
-                                            newroundoff = parseFloat((Math.round(newtotal + newtax) - (newtotal + newtax)).toFixed(2));
-                                            newtotal = parseInt(Math.round(newtotal + newtax));
-                                            this.setState({ items: newItems, tax: newtax, roundoff: newroundoff, total: newtotal });
-                                        }
-                                    }, 500);
-                                }),
-                            onRowUpdate: (newData, oldData) =>
-                                new Promise(resolve => {
-                                    setTimeout(() => {
-                                        resolve();
-                                        if (oldData) {
-                                            const newItems = this.state.items;
-                                            if(!newData.cost || !newData.quantity) 
-                                            this.setState({dialogOpen: true})
-                                            else{    
-                                                let newtotal = 0, newtax = 0, newroundoff = 0;
-                                                newData.total = parseFloat((newData.cost * newData.quantity).toFixed(2));
-                                                newItems[newItems.indexOf(oldData)] = newData;
-                                                newItems.forEach((item) => { newtotal = newtotal + parseFloat(item.total, 10) });
-                                                newtotal.toFixed(2);
-                                                newtax = parseFloat(((newtotal / 100) * 28).toFixed(2));
-                                                newroundoff = parseFloat((Math.round(newtotal + newtax) - (newtotal + newtax)).toFixed(2));
-                                                newtotal = parseInt(Math.round(newtotal + newtax));
-                                                this.setState({ items: newItems, tax: newtax, roundoff: newroundoff, total: newtotal });
-                                            }
-                                        }
-                                    }, 500);
-                                }),
-                                onRowDelete: oldData =>
-                                new Promise(resolve => {
-                                    setTimeout(() => {
-                                        resolve();
-                                            const newItems = this.state.items;
-                                            let newtotal = 0, newtax = 0, newroundoff = 0;
-                                            newItems.splice(newItems.indexOf(oldData), 1);
-                                            newItems.forEach((item) => { newtotal = newtotal + parseFloat(item.total, 10) });
-                                            newtotal.toFixed(2);
-                                            newtax = parseFloat(((newtotal / 100) * 28).toFixed(2));
-                                            newroundoff = parseFloat((Math.round(newtotal + newtax) - (newtotal + newtax)).toFixed(2));
-                                            newtotal = parseInt(Math.round(newtotal + newtax));
-                                            this.setState({ items: newItems, tax: newtax, roundoff: newroundoff, total: newtotal });
-                                    }, 500);
-                                }),
-                        }}
-                        options={{
-                            rowStyle: {
-                                backgroundColor: '#EEE',
-                            },
-                            actionsColumnIndex: 3,
-                            search: false,
-                            minBodyHeight: 300,
-                            loadingType: "linear",
-                        }}
-                        components={{
-                            Cell: props => (
-                                <MTableCell {...props} className={classes.noBorder} />
-                            ),
-                            EditField: props => (
-                                <MTableEditField {...props} className={classes.customWidth} />
-                            ),
-                            Pagination: props => (
-                                <TableCell colSpan={3} className={classes.footerFix}>
-                                    <Box component="span" m={1} className={classes.flex}>
-                                        <Typography variant="h6" component="span" align={"center"}>Tax Ammount: </Typography>
-                                        <Typography variant="h6" component="span" align={"center"}>{this.state.tax}</Typography>
-                                    </Box>
-                                    <Divider variant="middle" />
-                                    <Box component="span" m={1} className={classes.flex}>
-                                        <Typography variant="h5" component="span" align={"center"}>Total Ammount: </Typography>
-                                        <span style={{ display: "flex", flexDirection: "column", height: "3em", alignItems: "flex-end" }}>
-                                            <Typography variant="button" component="span" align={"center"}><span>Round off.</span> <span>{this.state.roundoff}</span></Typography>
-                                            <Typography variant="h5" component="span" align={"center"}>{this.state.total}</Typography>
-                                        </span>
-                                    </Box>
-                                </TableCell>
-                            ),
-                        }}
-                    />
-
-                    <DisableFieldEditable />
+                   
+                    <MaterialTable tax = {this.state.tax} total = {this.state.total} roundoff = {this.state.roundoff} handleItemListData = {this.handleItemListData}/>
+        
                     <AlertDialog text = {"Please Enter All Data....."} title = {"Invalid Input"} open = {this.state.openDialog} handleClose = {this.handleClose}/>
 
                     <Button variant="contained" color="primary" className={classes.button} onClick={this.feedDataIntoStore}>
