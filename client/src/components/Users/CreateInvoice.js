@@ -76,7 +76,7 @@ class CreateInvoice extends Component {
     feedDataIntoStore = () => {
         const { nameOfCustomer, date, items, invoiceTotal, invoiceTax, invoiceRoundoff } = this.state;
         const storeData = { nameOfCustomer, date, items, invoiceTotal, invoiceTax, invoiceRoundoff };
-        if (!nameOfCustomer || items.length === 0 || !date || !invoiceTotal || !invoiceTax || !invoiceRoundoff) this.setState({ openDialog: true });
+        if (!nameOfCustomer || items.length === 0 || !date || !invoiceTotal || !invoiceTax ) this.setState({ openDialog: true });
         else {
             this.props.dispatch(createInvoice(storeData));
         }
@@ -87,7 +87,6 @@ class CreateInvoice extends Component {
     }
 
     handleNameChange = (e) => {
-        console.log(e.target.value);
         this.setState({ nameOfCustomer: e.target.value })
     }
 

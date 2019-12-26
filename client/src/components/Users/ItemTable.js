@@ -93,7 +93,7 @@ export default function MaterialTableDemo(props) {
                                         const data = [...prevState.data];
                                         newData.cost = parseFloat(newData.cost);
                                         newData.quantity = parseFloat(newData.quantity);
-                                        newData.total = (newData.cost * newData.quantity).toFixed(2);
+                                        newData.total = parseFloat((newData.cost * newData.quantity).toFixed(2));
                                         data[data.indexOf(oldData)] = newData;
                                         handleItemListData(calculateValues(data));
                                         return { ...prevState, data };
@@ -157,7 +157,7 @@ export default function MaterialTableDemo(props) {
 function calculateValues(data) {
     let newtotal = 0, newtax = 0, newroundoff = 0;
     data.forEach((item) =>  newtotal = newtotal + item.total );
-    newtotal = parseFloat(newtotal.toFixed(2))
+    newtotal = parseFloat(newtotal.toFixed(2));
     newtax = parseFloat(((newtotal / 100) * 28).toFixed(2));
     newroundoff = parseFloat((Math.round(newtotal + newtax) - (newtotal + newtax)).toFixed(2));
     newtotal = parseInt(Math.round(newtotal + newtax));
