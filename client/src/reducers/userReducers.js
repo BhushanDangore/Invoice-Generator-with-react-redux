@@ -1,11 +1,9 @@
-import { GetUser, RemoveUser } from '../action/types'
+import { GetUser } from '../action/types'
 
-export const userReducer = function(state = {name: null}, action ){
+export const userReducer = function(state = { name: null }, action ){
     switch(action.type){
         case GetUser:
-            return {name: action.payload.name};
-        case RemoveUser:
-            return { name: false };
+            return { name: action.payload.name };
         default:
             return state;
     }
