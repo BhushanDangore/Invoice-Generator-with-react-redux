@@ -34,7 +34,6 @@ const styles = {
 class LoginForm extends Component {
     render() {
         const { classes } = this.props;
-        console.log(classes)
         return (<React.Fragment>
             <Container maxWidth="sm">
                 <Card className={classes.root}>

@@ -3,9 +3,9 @@ const { passport } = require("../passport/serializeDeserialize");
 
 Router.get("/currentuser", (req, res) => {
     if(req.user)
-        res.send({user: req.user});
+        res.send({ name: req.user.name });
     else
-        res.send({user: false});
+        res.send({ name: false});
 })
 
 Router.get("/login/google", passport.authenticate("google", {scope: ["https://www.googleapis.com/auth/userinfo.email", "https://www.googleapis.com/auth/userinfo.profile"], accessType: 'offline', passReqToCallback: true}));

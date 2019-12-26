@@ -1,20 +1,66 @@
 import React, { Component } from 'react';
-import { Container, Paper, Typography, createMuiTheme, Divider } from '@material-ui/core';
+import { Container, Paper, Typography, createMuiTheme, Divider, Button } from '@material-ui/core';
 import { connect } from 'react-redux';
 import { withStyles } from '@material-ui/core/styles';
+import Table from '@material-ui/core/Table';
+import TableBody from '@material-ui/core/TableBody';
+import TableCell from '@material-ui/core/TableCell';
+import TableHead from '@material-ui/core/TableHead';
+import TableRow from '@material-ui/core/TableRow';
+import TableContainer from '@material-ui/core/TableContainer';
+import { withSnackbar } from 'notistack';
+import Dialog from '../utils/Dialog';
+import { getInvoices } from './../../action/index';
 
 const theme = createMuiTheme();
-
 const styles = {
     root: {
         padding: theme.spacing(3, 2),
     },
+    table: {
+        minWidth: 700,
+    },
 }
 
+const StyledTableCell = withStyles(theme => ({
+    head: {
+      backgroundColor: theme.palette.primary.dark,
+      color: theme.palette.common.white,
+    },
+    body: {
+      fontSize: 14,
+    },
+}))(TableCell);
+  
+const StyledTableRow = withStyles(theme => ({
+    root: { 
+        '&:nth-of-type(odd)': {
+        backgroundColor: theme.palette.background.default,
+        },
+    },
+}))(TableRow);
 
 class ViewInvoices extends Component {
+    state = {
+        openDialog: false,
+        invoices: []
+    }
+
+    handleClose = () => {
+        this.setState({ openDialog: false })
+    }
+
+    componentDidMount(){
+        this.props.dispatch(getInvoices());
+    }
+
+    shouldComponentUpdate(nextProps){
+        if(nextProps.invoices.invoiceList.length === this.state.invoices.length) return false;
+        return true;
+    }
+    
     render() { 
-        const { classes } = this.props;
+        const { classes } = this.props;    
         return ( <React.Fragment>
             <Container>
                 <Paper className={classes.root}>
@@ -22,15 +68,52 @@ class ViewInvoices extends Component {
                         Invoice
                     </Typography>
                     <Divider style = { {marginTop: 15, marginBottom: 15} }/>
-                    <Typography component="p">
-                        {/* { this.props.user == null ? null : getProfile(this.props.user) } */}
-                    </Typography>
+                    { this.props.user == null ? null : this.getProfile(this.props.user, classes) }
                 </Paper>
+                <Dialog open = {this.state.openDialog} title = "Items" text = "Something" handleClose = {this.handleClose} />
             </Container>
         </React.Fragment> );
     }
+    getProfile = (user, classes) => {
+        if(!user.name) { return <Typography component="p">It seems like you are not logged in</Typography> }
+        else{
+            if(this.props.invoices.getInvoiceFailed){
+                this.porps.enqueueSnackbar(this.props.invoices.getInvoiceFailed, { variant: "error" })
+            }
+            else {
+                const { invoiceList } = this.props.invoices;
+                return ( <React.Fragment>    
+                    <TableContainer component={Paper}>
+                        <Table className={classes.table} aria-label="customized table">
+                            <TableHead>
+                                <TableRow>
+                                    <StyledTableCell>Name of Customer</StyledTableCell>
+                                    <StyledTableCell align="right">Date</StyledTableCell>
+                                    <StyledTableCell align="right">Items</StyledTableCell>
+                                    <StyledTableCell align="right">Tax</StyledTableCell>
+                                    <StyledTableCell align="right">Total</StyledTableCell>
+                                </TableRow>
+                            </TableHead>
+                            <TableBody>
+                            {invoiceList.map(row => (
+                                <StyledTableRow key={row._id}>
+                                <StyledTableCell component="th" scope="row">{row.nameOfCustomer}</StyledTableCell>
+                                <StyledTableCell align="right">{row.date}</StyledTableCell>
+                                <StyledTableCell align="right"><Button onClick = { () => { this.setState({ openDialog: true })} }>Items</Button></StyledTableCell>
+                                <StyledTableCell align="right">{row.invoiceTax}</StyledTableCell>
+                                <StyledTableCell align="right">{row.invoiceTotal}</StyledTableCell>
+                                </StyledTableRow>
+                            ))}
+                            </TableBody>
+                        </Table>
+                    </TableContainer>
+                </React.Fragment> )
+            }
+        }
+    }
 }
- 
+
+
 const mapStateToProps = store => store;
 
-export default connect(mapStateToProps)(withStyles(styles)(ViewInvoices));
+export default connect(mapStateToProps)(withSnackbar((withStyles(styles)(ViewInvoices))));

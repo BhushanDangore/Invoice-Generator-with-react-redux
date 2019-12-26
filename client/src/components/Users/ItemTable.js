@@ -1,5 +1,6 @@
 import React from 'react';
 import MaterialTable, { MTableEditField, MTableCell } from 'material-table';
+import AlertDialog from '../utils/Dialog';
 import {
     Box,
     TableCell,
@@ -43,10 +44,16 @@ export default function MaterialTableDemo(props) {
             { title: 'total', field: 'total', type: 'numeric', editable: 'never' },
         ],
         data: [],
-        dialogOpen: false
+        openDialog: false
     });
 
-    return (
+    function handleClose(){
+        setState(prevState => {
+            setState({...prevState, openDialog: false});
+        })
+    }
+
+    return (<React.Fragment>
         <MaterialTable
             title="Items"
             columns={state.columns}
@@ -58,9 +65,8 @@ export default function MaterialTableDemo(props) {
                             resolve();
                             setState(prevState => {
                                 const data = [...prevState.data];
-                                console.log(data);
-                                if (!newData.cost || !newData.quantity) {
-                                    setState({ ...prevState, dialogOpen: true });
+                                if (!newData.cost || !newData.quantity || !newData.item) {
+                                    setState({ ...prevState, openDialog: true });
                                 }
                                 else {
                                     newData.cost = parseFloat(newData.cost);
@@ -80,8 +86,8 @@ export default function MaterialTableDemo(props) {
                             resolve();
                             if (oldData) {
                                 setState(prevState => {
-                                    if (!newData.cost || !newData.quantity) {
-                                        setState({ ...prevState, dialogOpen: true });
+                                    if (!newData.cost || !newData.quantity || !newData.item) {
+                                        setState({ ...prevState, openDialog: true });
                                     }
                                     else{
                                         const data = [...prevState.data];
@@ -143,6 +149,8 @@ export default function MaterialTableDemo(props) {
                 ),
             }}
         />
+        <AlertDialog text={"Please enter all data in items list"} title={"Invalid Input"} open={state.openDialog} handleClose={handleClose} />
+        </React.Fragment>
     );
 
 }

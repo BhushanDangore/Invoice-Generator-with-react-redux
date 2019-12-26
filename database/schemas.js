@@ -1,17 +1,19 @@
 const {mongoose} = require("./mongoose");
 const Schema = mongoose.Schema;
 
-const item = new Schema({
-    itemName: String,
-    quantity: Number,
-    cost: Number
-})
-
 const invoice = new Schema({
     nameOfCustomer: String,
     date: Date,
-    items: [ item ]
-})
+    items: [{
+        itemName: String,
+        quantity: Number,
+        cost: Number,
+        total: Number,
+    }],
+    invoiceTotal: Number,
+    invoiceTax: Number,
+    invoiceRoundoff: Number
+});
 
 const user = new Schema({
     googleID: Number,
@@ -20,8 +22,10 @@ const user = new Schema({
     name: String,
     email: String,
     invoices: [ invoice ]
-})
+});
 
+const invoiceModel = mongoose.model("invoices", invoice);
 const userModel = mongoose.model("users", user);
 
-module.exports = userModel;
+module.exports = {userModel, invoiceModel};
+// module.exports = invoiceModel;

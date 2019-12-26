@@ -1,5 +1,5 @@
 const { passport } = require("./passport");
-const users = require("../database/schemas");
+const { userModel } = require("../database/schemas");
 
 
 passport.serializeUser(function (user, done) {
@@ -12,7 +12,7 @@ passport.serializeUser(function (user, done) {
 });
 
 passport.deserializeUser(function (id, done) {
-    users.findOne({
+    userModel.findOne({
         $or:[{"facebookID" : id}, {"googleID" : id}]
     }, (err, user) => {
         if (err) return done(err, null);

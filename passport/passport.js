@@ -2,8 +2,7 @@ const passport = require("passport");
 const googleStrategy = require("passport-google-oauth20").Strategy;
 const facebookStrategy = require("passport-facebook").Strategy;
 const keys = require("../keys/keys");
-const users = require("../database/schemas");
-
+const { userModel } = require("../database/schemas");
 
 //////         Google Auth Strategy Configure
 
@@ -12,9 +11,7 @@ passport.use(new googleStrategy({
     clientSecret: keys.google.ClientSecret,
     callbackURL: "/api/login/google/callback"
 }, (accessToken, refreshToken, Profile, callback) => {
-
-    console.log(accessToken,"\n\n", refreshToken);
-    users.findOne({
+    userModel.findOne({
         "googleID": Profile.id
     }, (err, user) => {
         if (err) {
@@ -24,7 +21,7 @@ passport.use(new googleStrategy({
         if (user) {
             return callback(null, user);
         } else {
-            let newUser = new users({
+            let newUser = new userModel({
                 googleID: Profile.id,
                 facebookID: null,
                 name: Profile.displayName,
@@ -49,8 +46,7 @@ passport.use(new facebookStrategy({
     clientSecret: keys.facebook.ClientSecretF,
     callbackURL: "/api/login/facebook/callback"
 }, (accessToken, refreshToken, Profile, callback) => {
-    console.log(Profile);
-    users.findOne({
+    userModel.findOne({
         "facebookID": Profile.id
     }, (err, user) => {
         if (err) {
@@ -60,7 +56,7 @@ passport.use(new facebookStrategy({
         if (user) {
             return callback(null, user);
         } else {
-            let newUser = new users({
+            let newUser = new userModel({
                 googleID: null,
                 facebookID: Profile.id,
                 name: Profile.displayName,

@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
 import { createStore, applyMiddleware } from 'redux';
 import ThunkMiddleware  from 'redux-thunk';
+import { SnackbarProvider } from 'notistack';
 
 import App from './App';
 import { reducers } from './reducers'
@@ -13,7 +14,12 @@ const store = createStore(reducers, applyMiddleware(ThunkMiddleware));
 
 ReactDOM.render( 
     <Provider store = {store}>
-        <App />
+        <SnackbarProvider maxSnack={2} anchorOrigin={{
+        vertical: 'bottom',
+        horizontal: 'right',
+    }}>
+            <App />
+        </SnackbarProvider>
     </Provider>, 
     document.getElementById('root')
 );

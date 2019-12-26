@@ -53,8 +53,8 @@ class NavBar extends Component {
 }
 
 const LoginButton = props => {
-    if(props.user === null) return null;
-    else if(props.user)
+    if(props.user.name === null) return null;
+    else if(props.user.name)
     return (<Link href="/api/logout" className = {props.classes.linkFix}>
             <Button variant="outlined" color="default" >Logout</Button>
         </Link>)

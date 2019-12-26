@@ -31,9 +31,8 @@ class Profile extends Component {
 }
 
 function getProfile(user){
-    if(!user) { return "Please Login First"; }
+    if(!user.name) { return "Please Login First"; }
     else return ( "Welcome, " + user.name )
-
 }
 
 const mapStateToProps = (store) => store;

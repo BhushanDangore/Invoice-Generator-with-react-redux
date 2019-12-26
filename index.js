@@ -29,7 +29,7 @@ app.use(passport.session());
 
 
 app.use("/api", require("./router/root"));
-app.use("/api/profile", require("./router/profile"));
+app.use("/api/user", require("./router/user"));
 app.use("/", (req, res) => {
     res.sendFile(path.join(__dirname, './client/build/', 'index.html'));
 })

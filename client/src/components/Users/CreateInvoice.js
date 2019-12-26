@@ -14,9 +14,10 @@ import {
     MuiPickersUtilsProvider
 } from '@material-ui/pickers';
 import { connect } from 'react-redux';
+import { withSnackbar } from 'notistack';
 import { withStyles } from '@material-ui/core/styles';
 import AlertDialog from '../utils/Dialog';
-import { createInvoice } from '../../action';
+import { createInvoice, resetInvoiceCreateMsg } from '../../action';
 import MaterialTable from './ItemTable';
 
 const theme = createMuiTheme();
@@ -75,9 +76,10 @@ class CreateInvoice extends Component {
     feedDataIntoStore = () => {
         const { nameOfCustomer, date, items, invoiceTotal, invoiceTax, invoiceRoundoff } = this.state;
         const storeData = { nameOfCustomer, date, items, invoiceTotal, invoiceTax, invoiceRoundoff };
-        if (!nameOfCustomer || items.length === 0 || !date) this.setState({ openDialog: true });
-        console.log(storeData)
-        this.props.dispatch(createInvoice(storeData));
+        if (!nameOfCustomer || items.length === 0 || !date || !invoiceTotal || !invoiceTax || !invoiceRoundoff) this.setState({ openDialog: true });
+        else {
+            this.props.dispatch(createInvoice(storeData));
+        }
     }
 
     handleItemListData = (data) => {
@@ -95,60 +97,78 @@ class CreateInvoice extends Component {
     };
     render() {
         const { classes } = this.props;
+        if(this.props.invoices.invoiceSaveFailed){
+            setTimeout(() => {
+                let {invoiceSaveFailed} = this.props.invoices;
+                this.props.enqueueSnackbar(invoiceSaveFailed, {
+                    variant: invoiceSaveFailed.search("Error") === -1 ? "success" : "error"
+                });
+                this.props.dispatch(resetInvoiceCreateMsg())}, 600)
+        }
         return (<React.Fragment>
             <Container>
                 <Paper className={classes.root}>
-
                     <Typography variant="h5" component="h3">
                         Create Invoice
                     </Typography>
 
                     <Divider style={{ marginTop: 15, marginBottom: 15 }} />
-
-                    <TextField
-                        id="standard-full-width"
-                        label="Name"
-                        style={{ margin: 8 }}
-                        placeholder="Name of Customer"
-                        margin="normal"
-                        fullWidth
-                        value={this.state.nameOfCustomer}
-                        onChange={this.handleNameChange}
-                        InputLabelProps={{
-                            shrink: true,
-                        }}
-                    />
-
-                    <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                        <KeyboardDatePicker
-                            style={{ margin: 8, marginBottom: 20 }}
-                            margin="normal"
-                            id="date-picker-dialog"
-                            label="Date picker dialog"
-                            format="dd/MM/yyyy"
-                            value={this.state.date}
-                            onChange={this.handleDateChange}
-                            KeyboardButtonProps={{
-                                'aria-label': 'change date',
-                            }}
-                    />
-                    </MuiPickersUtilsProvider>
-                   
-                    <MaterialTable tax = {this.state.invoiceTax} total = {this.state.invoiceTotal} roundoff = {this.state.invoiceRoundoff} handleItemListData = {this.handleItemListData}/>
-        
-                    <AlertDialog text = {"Please Enter All Data....."} title = {"Invalid Input"} open = {this.state.openDialog} handleClose = {this.handleClose}/>
-
-                    <Button variant="contained" color="primary" className={classes.button} onClick={this.feedDataIntoStore}>
-                        Create Invoice
-                    </Button>
+                    {this.props.user === null ? null : this.checkUser(this.props.user, classes)}
                 </Paper>
             </Container>
-                    <AlertDialog text={"You Need To Provide All The Data To Create Invoice, Fields Can't Be Kept Empty"} title={"Can't Create Invoice"} open={this.state.openDialog} handleClose={this.handleClose} />
+            <AlertDialog text={"You Need To Provide All The Data To Create Invoice, Fields Can't Be Kept Empty"} title={"Can't Create Invoice"} open={this.state.openDialog} handleClose={this.handleClose} />
         </React.Fragment>);
+    }
+    checkUser = (user, classes) => {
+        if (user) {
+            return (<React.Fragment>
+                <TextField
+                    id="standard-full-width"
+                    label="Name"
+                    style={{ margin: 8 }}
+                    placeholder="Name of Customer"
+                    margin="normal"
+                    fullWidth
+                    value={this.state.nameOfCustomer}
+                    onChange={this.handleNameChange}
+                    InputLabelProps={{
+                        shrink: true,
+                    }}
+                />
+    
+                <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                    <KeyboardDatePicker
+                        style={{ margin: 8, marginBottom: 20 }}
+                        margin="normal"
+                        id="date-picker-dialog"
+                        label="Date picker dialog"
+                        format="dd/MM/yyyy"
+                        value={this.state.date}
+                        onChange={this.handleDateChange}
+                        KeyboardButtonProps={{
+                            'aria-label': 'change date',
+                        }}
+                    />
+                </MuiPickersUtilsProvider>
+    
+                <MaterialTable tax={this.state.invoiceTax} total={this.state.invoiceTotal} roundoff={this.state.invoiceRoundoff} handleItemListData={this.handleItemListData} />
+    
+                <AlertDialog text={"Please Enter All Data....."} title={"Invalid Input"} open={this.state.openDialog} handleClose={this.handleClose} />
+    
+                <Button variant="contained" color="primary" className={classes.button} onClick={this.feedDataIntoStore}>
+                    Create Invoice
+                </Button>
+            </React.Fragment>)
+        }
+        else {
+            return "Please Login First";
+        }
     }
 }
 
 
-const mapStateToProps = store => store;
-        
-export default connect(mapStateToProps)(withStyles(styles)(CreateInvoice));
+const mapStateToProps = store => {
+    return store;
+};
+
+export default connect(mapStateToProps)(withSnackbar(withStyles(styles)(CreateInvoice)));

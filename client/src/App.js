@@ -14,7 +14,6 @@ import { getUser } from './action'
 import CreateInvoice from './components/Users/CreateInvoice';
 import ViewInvoices from './components/Users/ViewInvoices';
 
-
 class App extends Component {
     constructor(props) {
         super(props);
