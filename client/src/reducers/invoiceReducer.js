@@ -1,19 +1,20 @@
 import { CreateInvoice, ResetInvoiceSaveMsg, GetInvoices } from './../action/types';
 
-export const InvoiceReducer = (state = { getInvoiceFailed: false, invoiceSaveFailed: false, invoiceList: []}, action) => {
+export const InvoiceReducer = (state = { getInvoiceFailed: false, invoiceSaveStatus: false, invoiceList: []}, action) => {
     switch(action.type){
         case CreateInvoice:
-            let invoiceSaveFailed;
-            if(action.payload){
-                invoiceSaveFailed = `Invice of ${action.payload.nameOfCustomer} has been created sucessfully`;
+            let invoiceSaveStatus;
+            console.log("Payload ", action);
+            if(action.payload.status){
+                invoiceSaveStatus = `Invice of ${action.payload.invoice.nameOfCustomer} has been created sucessfully`;
             }
             else {
-                invoiceSaveFailed = `Error occured during invoice creation of ${action.payload.nameOfCustomer}`;
+                invoiceSaveStatus = `Error occured during invoice creation of ${action.payload.invoice.nameOfCustomer}`;
             }
-            return { invoiceSaveFailed, invoiceList: []};
+            return { ...state, invoiceSaveStatus};
 
         case ResetInvoiceSaveMsg:
-            return { ...state, invoiceSaveFailed: false};
+            return { ...state, invoiceSaveStatus: false};
         
         case GetInvoices:
             let getInvoiceFailed;

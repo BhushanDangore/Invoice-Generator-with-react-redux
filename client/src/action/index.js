@@ -8,15 +8,17 @@ export const getUser = () => {
     }
 }
 
-export const createInvoice = (invoice) => {
+export const createInvoice = (Invoice) => {
     return dispatch => {
+        let invoice = Invoice;
         axios.get("/api/user/createinvoice", {
             params: invoice
         }).then((res) => {
+            let invoice = Invoice;
             if(res.data.status)
-            dispatch({ type: CreateInvoice, payload: invoice })
+            dispatch({ type: CreateInvoice, payload: {status: true, invoice } })
             else
-            dispatch({ type: CreateInvoice, payload: false })
+            dispatch({ type: CreateInvoice, payload: {status: false, invoice } })
         })
     }
 }

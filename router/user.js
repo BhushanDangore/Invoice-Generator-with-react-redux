@@ -18,7 +18,7 @@ Router.get("/createinvoice", (req, res) => {
                 existingInvoices = user.invoices;
                 userModel.findByIdAndUpdate(req.user.id, { invoices: [...existingInvoices, invoice] }, {new: true}, (err, res) => {
                     if(err) sendRes( {status: false} );
-                    else sendRes({ status: true })
+                    else sendRes( { status: true } )
                 })
             }
         })

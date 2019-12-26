@@ -87,6 +87,7 @@ class CreateInvoice extends Component {
     }
 
     handleNameChange = (e) => {
+        console.log(e.target.value);
         this.setState({ nameOfCustomer: e.target.value })
     }
 
@@ -97,11 +98,11 @@ class CreateInvoice extends Component {
     };
     render() {
         const { classes } = this.props;
-        if(this.props.invoices.invoiceSaveFailed){
+        if(this.props.invoices.invoiceSaveStatus){
             setTimeout(() => {
-                let {invoiceSaveFailed} = this.props.invoices;
-                this.props.enqueueSnackbar(invoiceSaveFailed, {
-                    variant: invoiceSaveFailed.search("Error") === -1 ? "success" : "error"
+                let { invoiceSaveStatus } = this.props.invoices;
+                this.props.enqueueSnackbar(invoiceSaveStatus, {
+                    variant: invoiceSaveStatus.search("Error") === -1 ? "success" : "error"
                 });
                 this.props.dispatch(resetInvoiceCreateMsg())}, 600)
         }
