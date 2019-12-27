@@ -2,15 +2,17 @@ const { Router } = require("../index");
 const { userModel } = require("../database/schemas");
 
 Router.get("/createinvoice", (req, res) => {
+    console.log(typeof req.query.date, req.query.date);
+    console.log(Date.parse(req.query.date));
     if(req.user){
         let invoice = req.query;
         let itemsArray = [];
         let existingInvoices;
         invoice.items.forEach(item => {
+            console.log(item);
             itemsArray.push(JSON.parse(item));
         })
         invoice.items = itemsArray;
-        invoice.date = new Date();
         
         userModel.findById(req.user.id, (err, user) => {
             if(err) res.send({status: false}) 
@@ -23,7 +25,7 @@ Router.get("/createinvoice", (req, res) => {
             }
         })
     }
-    else res.send({status: false});
+    else res.send({status: false, msg: "You Are Not Loged In, Please Log-in First"});
     
     function sendRes(params) {
         res.send(params);

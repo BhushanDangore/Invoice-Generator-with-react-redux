@@ -37,4 +37,4 @@ function getProfile(user){
 
 const mapStateToProps = (store) => store;
 
-export default connect(mapStateToProps)(withStyles(styles)(Profile));
+export default withStyles(styles)(connect(mapStateToProps)(Profile));

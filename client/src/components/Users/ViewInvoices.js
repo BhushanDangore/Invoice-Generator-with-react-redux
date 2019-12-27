@@ -43,11 +43,14 @@ const StyledTableRow = withStyles(theme => ({
 class ViewInvoices extends Component {
     state = {
         openDialog: false,
-        invoices: []
+        invoices: [],
+        openItems: false,
+        itemsArray: [],
+
     }
 
     handleClose = () => {
-        this.setState({ openDialog: false })
+        this.setState({ openDialog: false, openItems: false })
     }
 
     componentDidMount(){
@@ -71,6 +74,7 @@ class ViewInvoices extends Component {
                     { this.props.user == null ? null : this.getProfile(this.props.user, classes) }
                 </Paper>
                 <Dialog open = {this.state.openDialog} title = "Items" text = "Something" handleClose = {this.handleClose} />
+                <Dialog open = {this.state.openItems} title = "Items" handleClose = {this.handleClose} array = {this.state.itemsArray}/>
             </Container>
         </React.Fragment> );
     }
@@ -95,13 +99,13 @@ class ViewInvoices extends Component {
                                 </TableRow>
                             </TableHead>
                             <TableBody>
-                            {invoiceList.map(row => (
+                            {invoiceList.map((row, index) => (
                                 <StyledTableRow key={row._id}>
-                                <StyledTableCell component="th" scope="row">{row.nameOfCustomer}</StyledTableCell>
-                                <StyledTableCell align="right">{row.date}</StyledTableCell>
-                                <StyledTableCell align="right"><Button onClick = { () => { this.setState({ openDialog: true })} }>Items</Button></StyledTableCell>
-                                <StyledTableCell align="right">{row.invoiceTax}</StyledTableCell>
-                                <StyledTableCell align="right">{row.invoiceTotal}</StyledTableCell>
+                                    <StyledTableCell component="th" scope="row">{row.nameOfCustomer}</StyledTableCell>
+                                    <StyledTableCell align="right">{(new Date(row.date).toString()).split("GMT")[0]}</StyledTableCell>
+                                    <StyledTableCell align="right"><Button onClick = { (e) => { this.openItemsDialog(index)} }>Items</Button></StyledTableCell>
+                                    <StyledTableCell align="right">{row.invoiceTax}</StyledTableCell>
+                                    <StyledTableCell align="right">{row.invoiceTotal}</StyledTableCell>
                                 </StyledTableRow>
                             ))}
                             </TableBody>
@@ -111,9 +115,13 @@ class ViewInvoices extends Component {
             }
         }
     }
+    openItemsDialog = (index) => {
+        this.setState({openItems: true, itemsArray: this.props.invoices.invoiceList[index].items})
+    }
 }
+
 
 
 const mapStateToProps = store => store;
 
-export default connect(mapStateToProps)(withSnackbar((withStyles(styles)(ViewInvoices))));
+export default withStyles(styles)(withSnackbar((connect(mapStateToProps)(ViewInvoices))));

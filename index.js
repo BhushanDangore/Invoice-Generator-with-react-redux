@@ -39,5 +39,3 @@ app.listen(PORT, () => console.log("Lisning on port"+ PORT));
 module.exports = {
     passport,
 }
-
-

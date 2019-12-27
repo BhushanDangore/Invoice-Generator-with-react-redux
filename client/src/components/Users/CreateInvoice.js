@@ -8,11 +8,6 @@ import {
     TextField,
     Button,
 } from '@material-ui/core';
-import DateFnsUtils from '@date-io/date-fns';
-import {
-    KeyboardDatePicker,
-    MuiPickersUtilsProvider
-} from '@material-ui/pickers';
 import { connect } from 'react-redux';
 import { withSnackbar } from 'notistack';
 import { withStyles } from '@material-ui/core/styles';
@@ -58,11 +53,16 @@ const styles = {
 };
 
 class CreateInvoice extends Component {
+    
+    constructor(props){
+        super(props)
+        this.interval = null;
+    }
 
     state = {
         openDialog: false,
         nameOfCustomer: "",
-        date: new Date(),
+        date: new Date().toISOString(),
         items: [],
         invoiceTax: 0,
         invoiceTotal: 0,
@@ -74,8 +74,9 @@ class CreateInvoice extends Component {
     }
 
     feedDataIntoStore = () => {
-        const { nameOfCustomer, date, items, invoiceTotal, invoiceTax, invoiceRoundoff } = this.state;
+        let { nameOfCustomer, date, items, invoiceTotal, invoiceTax, invoiceRoundoff } = this.state;
         const storeData = { nameOfCustomer, date, items, invoiceTotal, invoiceTax, invoiceRoundoff };
+        console.log((this.state.date).toString());
         if (!nameOfCustomer || items.length === 0 || !date || !invoiceTotal || !invoiceTax ) this.setState({ openDialog: true });
         else {
             this.props.dispatch(createInvoice(storeData));
@@ -89,10 +90,13 @@ class CreateInvoice extends Component {
     handleNameChange = (e) => {
         this.setState({ nameOfCustomer: e.target.value })
     }
-
-    handleDateChange = newDate => {
+    
+    handleDateChange = event => {
+        event.persist();
+        console.log(event.target.value);
+        console.log(this.state.date)
         this.setState({
-            date: newDate
+            date: event.target.value.split('.')[0]+"."+this.state.date.split('.')[1]
         })
     };
     render() {
@@ -136,7 +140,20 @@ class CreateInvoice extends Component {
                     }}
                 />
     
-                <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                <form className={classes.container} noValidate>
+                <TextField
+                    id="datetime-local"
+                    label="Date And Time"
+                    type="datetime-local"
+                    defaultValue = {this.state.date.split('.')[0]}
+                    className = {classes.textField}
+                    onChange = { this.handleDateChange }
+                    InputLabelProps={{
+                    shrink: true,
+                    }}
+                />
+                </form>
+                {/* <MuiPickersUtilsProvider utils={DateFnsUtils}>
                     <KeyboardDatePicker
                         style={{ margin: 8, marginBottom: 20 }}
                         margin="normal"
@@ -149,7 +166,7 @@ class CreateInvoice extends Component {
                             'aria-label': 'change date',
                         }}
                     />
-                </MuiPickersUtilsProvider>
+                </MuiPickersUtilsProvider> */}
     
                 <MaterialTable tax={this.state.invoiceTax} total={this.state.invoiceTotal} roundoff={this.state.invoiceRoundoff} handleItemListData={this.handleItemListData} />
     

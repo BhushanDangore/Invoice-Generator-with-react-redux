@@ -28,6 +28,9 @@ const useStyles = makeStyles({
     footerFix: {
         display: "block",
     },
+    roundoff: {
+        padding: "4px 22px"
+    },
 })
 
 export default function MaterialTableDemo(props) {
@@ -137,13 +140,16 @@ export default function MaterialTableDemo(props) {
                             <Typography variant="h6" component="span" align={"center"}>Tax Ammount: </Typography>
                             <Typography variant="h6" component="span" align={"center"}>{tax}</Typography>
                         </Box>
+                        
                         <Divider variant="middle" />
+
+                        <Typography variant="button" className = {classes.roundoff} component="div" align={"right"}>Round Off &emsp;{roundoff}</Typography>
+
+                        <Divider variant="middle" />
+
                         <Box component="span" m={1} className={classes.flex}>
-                            <Typography variant="h5" component="span" align={"center"}>Total Ammount: </Typography>
-                            <span style={{ display: "flex", flexDirection: "column", height: "3em", alignItems: "flex-end" }}>
-                                <Typography variant="button" component="span" align={"center"}><span>Round off.</span> <span>{roundoff}</span></Typography>
-                                <Typography variant="h5" component="span" align={"center"}>{total}</Typography>
-                            </span>
+                            <Typography variant="h6" component="span" align={"center"}>Total Ammount: </Typography>
+                            <Typography variant="h5" component="span" align={"center"}>{total}</Typography>
                         </Box>
                     </TableCell>
                 ),

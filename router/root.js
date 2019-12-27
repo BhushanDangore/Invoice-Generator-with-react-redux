@@ -2,8 +2,9 @@ const {  Router } = require("../index");
 const { passport } = require("../passport/serializeDeserialize");
 
 Router.get("/currentuser", (req, res) => {
-    if(req.user)
+    if(req.user){  
         res.send({ name: req.user.name });
+    }
     else
         res.send({ name: false});
 })
