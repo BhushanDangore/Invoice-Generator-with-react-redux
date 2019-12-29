@@ -1,4 +1,4 @@
-import { GetUser, RemoveUser, CreateInvoice, ResetInvoiceSaveMsg, GetInvoices } from './types';
+import { GetUser, RemoveUser, CreateInvoice, ResetInvoiceSaveMsg, GetInvoices, GetProfileConfig, SetProfileConfig, ResetProfile } from './types';
 import axios from 'axios';
 
 export const getUser = () => {
@@ -35,6 +35,30 @@ export const getInvoices = () => {
                 dispatch({type: GetInvoices, payload: res.data });
             }
         }))
+    }
+}
+
+export const getProfileConfig = () => {
+    return dispatch => {
+        axios.get("/api/user/profileconfig")
+        .then(res => {
+            dispatch({type: GetProfileConfig, payload: res.data})
+        })
+    }
+}
+
+export const setProfileConfig = (data) => {
+    return dispatch => {
+        axios.get("/api/user/setprofileconfig", { params: data })
+        .then((res) => {
+            dispatch({type: SetProfileConfig, payload: res.data})
+        })
+    }
+}
+
+export const resetProfile = () => {
+    return {
+        type: ResetProfile,
     }
 }
 

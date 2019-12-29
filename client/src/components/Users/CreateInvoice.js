@@ -25,12 +25,19 @@ const styles = {
     container: {
         display: 'flex',
         flexWrap: 'wrap',
+        marginTop: theme.spacing(2)
     },
     textField: {
         marginLeft: theme.spacing(1),
         marginRight: theme.spacing(1),
         width: 220,
-        marginBottom: 20,
+        marginBottom: 25,
+    },
+    textFieldSmall: {
+        '& > *': {
+            margin: theme.spacing(1),
+            width: 200,
+        },
     },
     button: {
         marginTop: '20px',
@@ -62,11 +69,16 @@ class CreateInvoice extends Component {
     state = {
         openDialog: false,
         nameOfCustomer: "",
+        costomerAddressLine: "",
+        customerCity: "",
+        customerState: "",
+        customerCountry: "",
         date: new Date().toISOString(),
         items: [],
         invoiceTax: 0,
         invoiceTotal: 0,
         invoiceRoundoff: 0,
+        displayTime: new Date(new Date().getTime() + 19800000).toISOString().split('.')[0]
     }
 
     handleClose = () => {
@@ -74,9 +86,8 @@ class CreateInvoice extends Component {
     }
 
     feedDataIntoStore = () => {
-        let { nameOfCustomer, date, items, invoiceTotal, invoiceTax, invoiceRoundoff } = this.state;
-        const storeData = { nameOfCustomer, date, items, invoiceTotal, invoiceTax, invoiceRoundoff };
-        console.log((this.state.date).toString());
+        let { nameOfCustomer, date, items, invoiceTotal, invoiceTax, invoiceRoundoff, customerCountry, customerState, customerCity, costomerAddressLine } = this.state;
+        const storeData = { nameOfCustomer, date, items, invoiceTotal, invoiceTax, invoiceRoundoff, customerCountry, customerState, customerCity, costomerAddressLine };
         if (!nameOfCustomer || items.length === 0 || !date || !invoiceTotal || !invoiceTax ) this.setState({ openDialog: true });
         else {
             this.props.dispatch(createInvoice(storeData));
@@ -87,8 +98,25 @@ class CreateInvoice extends Component {
         setTimeout(() => this.setState({ invoiceTotal: data.total, invoiceTax: data.tax, invoiceRoundoff: data.roundoff, items: data.items }), 500);
     }
 
-    handleNameChange = (e) => {
-        this.setState({ nameOfCustomer: e.target.value })
+    handleInputChange = (e) => {
+        switch(e.target.placeholder){
+            case "NameOfCustomer":
+                this.setState({ nameOfCustomer: e.target.value }); 
+                break;
+            case "Address": 
+                this.setState({ costomerAddressLine: e.target.value }); 
+                break;
+            case "City": 
+                this.setState({ customerCity: e.target.value }); 
+                break;
+            case "State": 
+                this.setState({ customerState: e.target.value }); 
+                break;
+            case "Country": 
+                this.setState({ customerCountry: e.target.value }); 
+                break;
+            default: console.log("Cannot Find matching Event");
+        }
     }
     
     handleDateChange = event => {
@@ -130,43 +158,44 @@ class CreateInvoice extends Component {
                     id="standard-full-width"
                     label="Name"
                     style={{ margin: 8 }}
-                    placeholder="Name of Customer"
+                    placeholder="NameOfCustomer"
                     margin="normal"
-                    fullWidth
                     value={this.state.nameOfCustomer}
-                    onChange={this.handleNameChange}
+                    onChange={this.handleInputChange}
                     InputLabelProps={{
                         shrink: true,
                     }}
                 />
-    
-                <form className={classes.container} noValidate>
                 <TextField
-                    id="datetime-local"
-                    label="Date And Time"
-                    type="datetime-local"
-                    defaultValue = {this.state.date.split('.')[0]}
-                    className = {classes.textField}
-                    onChange = { this.handleDateChange }
+                    id="standard-full-width"
+                    label="Address of Customer"
+                    style={{ margin: 8 }}
+                    placeholder="Address"
+                    margin="normal"
+                    value={this.state.costomerAddressLine}
+                    onChange={this.handleInputChange}
                     InputLabelProps={{
-                    shrink: true,
+                        shrink: true,
                     }}
                 />
+                <form noValidate autoComplete="off">
+                    <TextField id="standard-basic" placeholder="City" label="City" className={classes.textFieldSmall} value = {this.state.customerCity} onChange={this.handleInputChange}/>
+                    <TextField id="standard-basic" placeholder="State" label="State" className={classes.textFieldSmall} value = {this.state.customerState} onChange={this.handleInputChange}/>
+                    <TextField id="standard-basic" placeholder="Country" label="Country" className={classes.textFieldSmall} value = {this.state.customerCountry} onChange={this.handleInputChange}/>
                 </form>
-                {/* <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                    <KeyboardDatePicker
-                        style={{ margin: 8, marginBottom: 20 }}
-                        margin="normal"
-                        id="date-picker-dialog"
-                        label="Date picker dialog"
-                        format="dd/MM/yyyy"
-                        value={this.state.date}
-                        onChange={this.handleDateChange}
-                        KeyboardButtonProps={{
-                            'aria-label': 'change date',
+                <form className={classes.container} noValidate>
+                    <TextField
+                        id="datetime-local"
+                        label="Date And Time"
+                        type="datetime-local"
+                        defaultValue = {this.state.displayTime}
+                        className = {classes.textField}
+                        onChange = { this.handleDateChange }
+                        InputLabelProps={{
+                        shrink: true,
                         }}
                     />
-                </MuiPickersUtilsProvider> */}
+                </form>
     
                 <MaterialTable tax={this.state.invoiceTax} total={this.state.invoiceTotal} roundoff={this.state.invoiceRoundoff} handleItemListData={this.handleItemListData} />
     

@@ -31,7 +31,7 @@ const StyledTableCell = withStyles(theme => ({
       fontSize: 14,
     },
 }))(TableCell);
-  
+
 const StyledTableRow = withStyles(theme => ({
     root: { 
         '&:nth-of-type(odd)': {
@@ -82,7 +82,7 @@ class ViewInvoices extends Component {
         if(!user.name) { return <Typography component="p">It seems like you are not logged in</Typography> }
         else{
             if(this.props.invoices.getInvoiceFailed){
-                this.porps.enqueueSnackbar(this.props.invoices.getInvoiceFailed, { variant: "error" })
+                this.props.enqueueSnackbar(this.props.invoices.getInvoiceFailed, { variant: "error" })
             }
             else {
                 const { invoiceList } = this.props.invoices;
@@ -119,8 +119,6 @@ class ViewInvoices extends Component {
         this.setState({openItems: true, itemsArray: this.props.invoices.invoiceList[index].items})
     }
 }
-
-
 
 const mapStateToProps = store => store;
 

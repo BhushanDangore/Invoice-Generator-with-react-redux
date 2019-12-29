@@ -14,9 +14,10 @@ const store = createStore(reducers, applyMiddleware(ThunkMiddleware));
 
 ReactDOM.render( 
     <Provider store = {store}>
-        <SnackbarProvider maxSnack={2} anchorOrigin={{
+        <SnackbarProvider maxSnack={3} anchorOrigin={{
         vertical: 'bottom',
         horizontal: 'right',
+        preventDuplicate: true,
     }}>
             <App />
         </SnackbarProvider>
