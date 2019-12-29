@@ -81,7 +81,6 @@ class Profile extends Component {
 
     static getDerivedStateFromProps(props, state) {
         const profile = props.profile;
-        console.log("Current Props -- ",profile)
         if (profile.config) {
             const config = profile.config;
             if (config.shopName) {
