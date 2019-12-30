@@ -35,10 +35,8 @@ const useStyles = makeStyles({
 
 export default function MaterialTableDemo(props) {
 
-    let { tax, total, roundoff, handleItemListData } = props;
-
+    let { total, roundoff, handleItemListData, taxes } = props;
     const classes = useStyles();
-
     const [state, setState] = React.useState({
         columns: [
             { title: 'Item', field: 'item' },
@@ -76,7 +74,7 @@ export default function MaterialTableDemo(props) {
                                     newData.quantity = parseFloat(newData.quantity);
                                     newData.total = parseFloat((newData.cost * newData.quantity).toFixed(2));
                                     data.push(newData);
-                                    handleItemListData(calculateValues(data));
+                                    handleItemListData(calculateValues(data, taxes));
                                     setState({ ...prevState, data });
                                 }
                                 return { ...prevState, data };
@@ -98,7 +96,7 @@ export default function MaterialTableDemo(props) {
                                         newData.quantity = parseFloat(newData.quantity);
                                         newData.total = parseFloat((newData.cost * newData.quantity).toFixed(2));
                                         data[data.indexOf(oldData)] = newData;
-                                        handleItemListData(calculateValues(data));
+                                        handleItemListData(calculateValues(data, taxes));
                                         return { ...prevState, data };
                                     }
                                 });
@@ -112,7 +110,7 @@ export default function MaterialTableDemo(props) {
                             setState(prevState => {
                                 const data = [...prevState.data];
                                 data.splice(data.indexOf(oldData), 1);
-                                handleItemListData(calculateValues(data));
+                                handleItemListData(calculateValues(data, taxes));
                                 return { ...prevState, data };
                             });
                         }, 200);
@@ -138,7 +136,9 @@ export default function MaterialTableDemo(props) {
                     <TableCell colSpan={3} className={classes.footerFix}>
                         <Box component="span" m={1} className={classes.flex}>
                             <Typography variant="h6" component="span" align={"center"}>Tax Ammount: </Typography>
-                            <Typography variant="h6" component="span" align={"center"}>{tax}</Typography>
+                            {taxes.map((taxed, i)=> {
+                                return <Typography key = {i} variant="subtitle1" component="span" align={"center"}>{taxed.taxName}&ensp; {taxed.taxValue}% &emsp; {taxed.totalTax}</Typography>
+                            })}
                         </Box>
                         
                         <Divider variant="middle" />
@@ -160,12 +160,16 @@ export default function MaterialTableDemo(props) {
     );
 
 }
-function calculateValues(data) {
+function calculateValues(data, taxes) {
     let newtotal = 0, newtax = 0, newroundoff = 0;
     data.forEach((item) =>  newtotal = newtotal + item.total );
-    newtotal = parseFloat(newtotal.toFixed(2));
-    newtax = parseFloat(((newtotal / 100) * 28).toFixed(2));
+    taxes.map(tax => {
+        return tax.totalTax = parseFloat(((newtotal / 100) * tax.taxValue).toFixed(2))
+    })
+    taxes.forEach(tax => {
+        newtax = newtax + tax.totalTax;
+    });
     newroundoff = parseFloat((Math.round(newtotal + newtax) - (newtotal + newtax)).toFixed(2));
     newtotal = parseInt(Math.round(newtotal + newtax));
-    return { total: newtotal, tax: newtax, roundoff: newroundoff, items: data };
+    return { total: newtotal, tax: taxes, roundoff: newroundoff, items: data, totaltax: newtax };
 }

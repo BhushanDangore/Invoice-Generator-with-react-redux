@@ -5,4 +5,5 @@ export const ResetInvoiceSaveMsg = "RESTET_INVOICE_SAVE_MESSAGE";
 export const GetInvoices = "GET_INVOICES";
 export const GetProfileConfig = "GET_PROFILE_CONFIG";
 export const SetProfileConfig = "SET_PROFILE_CONFIG";
-export const ResetProfile = "RESET_PROFILE"
+export const ResetProfile = "RESET_PROFILE";
+export const GetTaxes = "GET_TAXES";

@@ -1,4 +1,4 @@
-import { GetUser, RemoveUser, CreateInvoice, ResetInvoiceSaveMsg, GetInvoices, GetProfileConfig, SetProfileConfig, ResetProfile } from './types';
+import { GetUser, RemoveUser, CreateInvoice, ResetInvoiceSaveMsg, GetInvoices, GetProfileConfig, SetProfileConfig, ResetProfile, GetTaxes } from './types';
 import axios from 'axios';
 
 export const getUser = () => {
@@ -42,7 +42,14 @@ export const getProfileConfig = () => {
     return dispatch => {
         axios.get("/api/user/profileconfig")
         .then(res => {
-            dispatch({type: GetProfileConfig, payload: res.data})
+            if(res.data.status){
+                let taxes = res.data.config.taxes;
+                let parsedTaxes = taxes.map(tax => {
+                    return JSON.parse(tax);
+                });
+                res.data.config.taxes = parsedTaxes;
+                return dispatch({type: GetProfileConfig, payload: res.data});
+            }else dispatch({type: GetProfileConfig, payload: res.data});
         })
     }
 }
@@ -52,6 +59,24 @@ export const setProfileConfig = (data) => {
         axios.get("/api/user/setprofileconfig", { params: data })
         .then((res) => {
             dispatch({type: SetProfileConfig, payload: res.data})
+        })
+    }
+}
+
+export const getTaxes = () => {
+    return dispatch => {
+        axios.get("/api/user/gettaxes")
+        .then(res => {
+            if(res.data.status){
+                let taxes = res.data.taxes;
+                let parsedTaxes = taxes.map(tax => {
+                    return JSON.parse(tax);
+                });
+                res.data.taxes = parsedTaxes;
+                dispatch({ type: GetTaxes, payload: res.data });
+            }else{
+                dispatch({ type: GetTaxes, payload: res.data });
+            }
         })
     }
 }

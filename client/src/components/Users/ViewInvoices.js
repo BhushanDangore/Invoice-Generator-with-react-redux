@@ -46,11 +46,16 @@ class ViewInvoices extends Component {
         invoices: [],
         openItems: false,
         itemsArray: [],
-
     }
 
     handleClose = () => {
         this.setState({ openDialog: false, openItems: false })
+    }
+    openItemsDialog = (index) => {
+        this.setState({openItems: true, itemsArray: this.props.invoices.invoiceList[index].items})
+    }
+    printInvoice = (index) => {
+        console.log(index," is requesting for print");
     }
 
     componentDidMount(){
@@ -96,6 +101,7 @@ class ViewInvoices extends Component {
                                     <StyledTableCell align="right">Items</StyledTableCell>
                                     <StyledTableCell align="right">Tax</StyledTableCell>
                                     <StyledTableCell align="right">Total</StyledTableCell>
+                                    <StyledTableCell align="right">Print</StyledTableCell>
                                 </TableRow>
                             </TableHead>
                             <TableBody>
@@ -104,8 +110,9 @@ class ViewInvoices extends Component {
                                     <StyledTableCell component="th" scope="row">{row.nameOfCustomer}</StyledTableCell>
                                     <StyledTableCell align="right">{(new Date(row.date).toString()).split("GMT")[0]}</StyledTableCell>
                                     <StyledTableCell align="right"><Button onClick = { (e) => { this.openItemsDialog(index)} }>Items</Button></StyledTableCell>
-                                    <StyledTableCell align="right">{row.invoiceTax}</StyledTableCell>
+                                    <StyledTableCell align="right">{row.invoiceTotalTax}</StyledTableCell>
                                     <StyledTableCell align="right">{row.invoiceTotal}</StyledTableCell>
+                                    <StyledTableCell align="right"><Button onClick = { (e) => { this.printInvoice(index)} }>Print</Button></StyledTableCell>
                                 </StyledTableRow>
                             ))}
                             </TableBody>
@@ -114,9 +121,6 @@ class ViewInvoices extends Component {
                 </React.Fragment> )
             }
         }
-    }
-    openItemsDialog = (index) => {
-        this.setState({openItems: true, itemsArray: this.props.invoices.invoiceList[index].items})
     }
 }
 

@@ -24,7 +24,8 @@ const invoice = new Schema({
         cost: Number,
         total: Number,
     }],
-    invoiceTax: Number,
+    invoiceTax: Array,
+    invoiceTotalTax: Number,
     invoiceRoundoff: Number,
     invoiceTotal: Number,
 });
@@ -40,6 +41,7 @@ const user = new Schema({
         addressLine1: String,
         addressLine2: String,
         currency: String,
+        taxes: Array,
     },
     invoices: [ invoice ],
 });

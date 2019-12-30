@@ -1,6 +1,6 @@
-import { GetProfileConfig, SetProfileConfig, ResetProfile } from "../action/types";
+import { GetProfileConfig, SetProfileConfig, ResetProfile, GetTaxes } from "../action/types";
 
-export const profileReducer = (state = {}, action) => {
+export const profileReducer = (state = {taxes: null, getTaxesStatus: false}, action) => {
     switch(action.type){
         case GetProfileConfig:
             if(action.payload.status)
@@ -17,8 +17,16 @@ export const profileReducer = (state = {}, action) => {
             } else{
                 return {...state, config: false, statusMessage: false, saveStatus: action.payload.msg};
             }
+            
+        case GetTaxes:
+            if(action.payload.status){
+                return { ...state, taxes: action.payload.taxes, getTaxesStatus: false }
+            }
+            return {...state, taxes: false, getTaxesStatus: action.payload.msg }
+                
         case ResetProfile:
-            return {...state, config: false, statusMessage: false, saveStatus: false}
+            return {...state, config: false, statusMessage: false, saveStatus: false };
+
         default: 
             return state;
     }
