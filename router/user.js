@@ -122,14 +122,21 @@ Router.get('/printinvoice/:id', (req, res, next) => {
                         currency = "";   //These Are not Set for now..
                         break;
                 }
-
                 const invoice = {
                     retailer: {
                         name: user.config.shopName,
                         addressLine1: user.config.addressLine1,
                         addressLine2: user.config.addressLine2,
+                        contact: "7218986846", 
+                        accDetails: {
+                            accNo: 123456789102,
+                            bankName: "State Bank Of India",
+                            bankCodeName: "IFSC",
+                            bankCode: "SBI21432000",
+                        }
                     },
                     nameOfCustomer: currInvoices.nameOfCustomer,
+                    date: new Date(currInvoices.date),
                     customer: {
                         address: currInvoices.costomerAddressLine,
                         city: currInvoices.customerCity,
@@ -137,7 +144,7 @@ Router.get('/printinvoice/:id', (req, res, next) => {
                         country: currInvoices.customerCountry,
                     },
                     items: currInvoices.items,
-                    tax: currInvoices.invoiceTotalTax,
+                    tax: currInvoices.invoiceTax,
                     roundOff: currInvoices.invoiceRoundoff,
                     total: currInvoices.invoiceTotal,
                     currency,
@@ -158,8 +165,6 @@ Router.get('/printinvoice/:id', (req, res, next) => {
                 //         }
                 //     });
                 // })
-
-
             }
             else
                 res.send({ status: false, msg: "You Are Not Logged In" })

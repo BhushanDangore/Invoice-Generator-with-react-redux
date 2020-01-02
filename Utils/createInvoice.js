@@ -1,31 +1,33 @@
 const PDFDocument = require("pdfkit");
-
+const fs = require('fs');
 function createInvoice(invoice, stream) {
     let doc = new PDFDocument({ size: "A4", margin: 50 });
     generateHeader(doc, invoice);
     generateCustomerInformation(doc, invoice);
     generateInvoiceTable(doc, invoice);
-    generateFooter(doc);
+    generateFooter(doc, invoice);
     doc.end();
     doc.pipe(stream);
 }
 
+const footerPosition = 780;
 function generateHeader(doc, invoice) {
     doc
         // .image("logo.png", 50, 45, { width: 50 })
         .fillColor("#444444")
-        .fontSize(20)
-        .fontSize(10)
-        .text(invoice.retailer.name, 200, 50, { align: "right" })
-        .text(invoice.retailer.addressLine1, 200, 65, { align: "right" })
-        .text(invoice.retailer.addressLine2, 200, 80, { align: "right" })
+        .fontSize(21)
+        .text(invoice.retailer.name, 50, 50, { align: "center" })
+        .fontSize(12)
+        .text(invoice.retailer.addressLine1, 50, 80, { align: "center" })
+        .text(invoice.retailer.addressLine2, 50, 95, { align: "center" })
+        .text(invoice.retailer.contact, 50, 110, { align: "center" })
         .moveDown();
 }
 
 function generateCustomerInformation(doc, invoice) {
     doc
         .fillColor("#444444")
-        .fontSize(20)
+        .fontSize(21)
         .text("Invoice", 50, 160);
 
     generateHr(doc, 185);
@@ -33,41 +35,44 @@ function generateCustomerInformation(doc, invoice) {
     const customerInformationTop = 200;
 
     doc
-        .fontSize(10)
-        .text("Invoice Number:", 50, customerInformationTop)
+        .fontSize(11)
         .font("Helvetica-Bold")
-        .text(invoice.invoice_nr, 150, customerInformationTop)
+
+        .text(invoice.nameOfCustomer, 50, customerInformationTop)
         .font("Helvetica")
-        .text("Invoice Date:", 50, customerInformationTop + 15)
-        .text(formatDate(new Date()), 150, customerInformationTop + 15)
-        .text("Payable:", 50, customerInformationTop + 30)
+        .text(
+            invoice.customer.address + ", " +
+            invoice.customer.city + ", " +
+            invoice.customer.state + ", " +
+            invoice.customer.country,
+            {
+                height: customerInformationTop ,
+                lineGap: 4,
+                width: 250, 
+            },
+        )
+
+        .text("Invoice Number:", 350, customerInformationTop)
+        .font("Helvetica-Bold")
+        .text(invoice.invoice_nr, 450, customerInformationTop)
+        .font("Helvetica")
+        .text("Invoice Date:", 350, customerInformationTop + 18)
+        .text(formatDate(invoice.date), 450, customerInformationTop + 18)
+        .text("Payable:", 350, customerInformationTop + 18 * 2)
         .text(
             formatCurrency(invoice.total, invoice.currency),
-            150,
-            customerInformationTop + 30
+            450,
+            customerInformationTop + 18 * 2
         )
 
-        .font("Helvetica-Bold")
-        .text(invoice.nameOfCustomer, 300, customerInformationTop)
-        .font("Helvetica")
-        .text(invoice.customer.address, 300, customerInformationTop + 15)
-        .text(
-            invoice.customer.city +
-            ", " +
-            invoice.customer.state +
-            ", " +
-            invoice.customer.country,
-            300,
-            customerInformationTop + 30
-        )
         .moveDown();
 
-    generateHr(doc, 252);
+    generateHr(doc, 268);
 }
 
 function generateInvoiceTable(doc, invoice) {
     let i;
-    const invoiceTableTop = 300;
+    const invoiceTableTop = 290;
 
     doc.font("Helvetica-Bold");
     generateTableRow(
@@ -96,17 +101,21 @@ function generateInvoiceTable(doc, invoice) {
         generateHr(doc, position + 20);
     }
 
-    const subtotalPosition = invoiceTableTop + (i + 1) * 30;
-    generateTableRow(
-        doc,
-        subtotalPosition,
-        "",
-        "Tax",
-        "",
-        formatCurrency(invoice.tax, invoice.currency)
-    );
+    let subtotalPosition = invoiceTableTop + (i + 1) * 30;
 
-    const paidToDatePosition = subtotalPosition + 20;
+    invoice.tax.forEach(tax => {
+        generateTableRow(
+            doc,
+            subtotalPosition,
+            "",
+            tax.taxName,
+            tax.taxValue + "%",
+            formatCurrency(tax.totalTax, invoice.currency)
+        );
+        subtotalPosition = subtotalPosition + 30;
+    })
+
+    const paidToDatePosition = subtotalPosition;
     generateTableRow(
         doc,
         paidToDatePosition,
@@ -127,15 +136,71 @@ function generateInvoiceTable(doc, invoice) {
         formatCurrency(invoice.total, invoice.currency)
     );
     doc.font("Helvetica");
+
+    generateHr(doc, totalPosition + 30);
 }
 
-function generateFooter(doc) {
+function generateFooter(doc, invoice) {
+
+    if(invoice.retailer.accDetails){
+        doc
+        .fontSize(15)
+        .fillColor("#444444")
+        .text(
+            "Account Details",
+            50,
+            footerPosition - 200
+        )
+        .fontSize(11)
+        .text(
+            "Account Number:",
+            100,
+            footerPosition - 15 * 11
+        )
+        .text(
+            invoice.retailer.accDetails.accNo,
+            200,
+            footerPosition - 15 * 11
+        )
+        .text(
+            "Bank Name:",
+            100,
+            footerPosition - 15 * 10
+        )
+        .text(
+            invoice.retailer.accDetails.bankName,
+            200,
+            footerPosition - 15 * 10
+        )
+        .text(
+            invoice.retailer.accDetails.bankCodeName,
+            100,
+            footerPosition - 15 * 9
+        )
+        .text(
+            invoice.retailer.accDetails.bankCode,
+            200,
+            footerPosition  - 15 * 9
+        )
+    }
     doc
+        .text(
+            invoice.retailer.name,
+            50,
+            footerPosition - 75,
+            { align: "right" }
+        )
+        .text(
+            "Authorised Signatory",
+            50,
+            footerPosition - 20,
+            { align: "right" }
+        )
         .fontSize(10)
         .text(
-            "Payment is due within 15 days. Thank you for your business.",
+            "Thank you for your business.",
             50,
-            780,
+            footerPosition,
             { align: "center", width: 500 }
         );
 }
@@ -174,7 +239,7 @@ function formatDate(date) {
     const month = date.getMonth() + 1;
     const year = date.getFullYear();
 
-    return year + "/" + month + "/" + day;
+    return day + " /" + month + " /" + year;
 }
 
 module.exports = {

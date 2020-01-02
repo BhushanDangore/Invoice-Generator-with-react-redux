@@ -94,7 +94,7 @@ class CreateInvoice extends Component {
     }
 
     feedDataIntoStore = () => {
-        let { nameOfCustomer, date, items, invoiceTotal, invoiceTax, invoiceTotalTax, invoiceRoundoff, customerCountry, customerState, customerCity, costomerAddressLine } = this.state;
+        let { nameOfCustomer, date, items, invoiceTotal, invoiceTax, invoiceTotalTax, invoiceRoundoff, customerCountry, customerState, customerCity, costomerAddressLine  } = this.state;
         const storeData = { nameOfCustomer, date, items, invoiceTotal, invoiceTotalTax, invoiceTax, invoiceRoundoff, customerCountry, customerState, customerCity, costomerAddressLine };
         if (!nameOfCustomer || items.length === 0 || !date || !invoiceTotal || !invoiceTax || !invoiceTotalTax ) this.setState({ openDialog: true });
         else {
