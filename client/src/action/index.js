@@ -1,4 +1,4 @@
-import { GetUser, RemoveUser, CreateInvoice, ResetInvoiceSaveMsg, GetInvoices, GetProfileConfig, SetProfileConfig, ResetProfile, GetTaxes } from './types';
+import { GetUser, RemoveUser, CreateInvoice, ResetInvoiceSaveMsg, GetInvoices, GetProfileConfig, SetProfileConfig, ResetProfile, GetTaxes, PrintInvoice } from './types';
 import axios from 'axios';
 
 export const getUser = () => {
@@ -77,6 +77,18 @@ export const getTaxes = () => {
             }else{
                 dispatch({ type: GetTaxes, payload: res.data });
             }
+        })
+    }
+}
+
+export const printInvoice = (id) => {
+    return dispatch => {
+        axios.get('/api/user/printinvoice', {
+            params: {Index: id},
+        })
+        .then(res => {
+            dispatch({type: PrintInvoice, payload: res.data});
+            window.open("data:application/pdf," + encodeURI(res.data));
         })
     }
 }

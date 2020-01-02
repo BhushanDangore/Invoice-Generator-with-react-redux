@@ -1,10 +1,9 @@
-import { CreateInvoice, ResetInvoiceSaveMsg, GetInvoices } from './../action/types';
+import { CreateInvoice, ResetInvoiceSaveMsg, GetInvoices, PrintInvoice } from './../action/types';
 
 export const InvoiceReducer = (state = { getInvoiceFailed: false, invoiceSaveStatus: false, invoiceList: []}, action) => {
     switch(action.type){
         case CreateInvoice:
             let invoiceSaveStatus;
-            console.log("Payload ", action);
             if(action.payload.status){
                 invoiceSaveStatus = `Invice of ${action.payload.invoice.nameOfCustomer} has been created sucessfully`;
             }
@@ -26,6 +25,9 @@ export const InvoiceReducer = (state = { getInvoiceFailed: false, invoiceSaveSta
                 getInvoiceFailed = "Failed to get your invoices";
                 return { getInvoiceFailed, invoiceList: [], invoiceSaveFailed: false };
             }
+        case PrintInvoice:
+            console.log(action);
+            return {...state};
         default:
             return state;
     }

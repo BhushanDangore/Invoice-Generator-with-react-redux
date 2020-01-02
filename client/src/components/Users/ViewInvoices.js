@@ -56,6 +56,8 @@ class ViewInvoices extends Component {
     }
     printInvoice = (index) => {
         console.log(index," is requesting for print");
+        let linkHref = `/api/user/printinvoice/${index}`;
+        window.open(linkHref, '_blank');
     }
 
     componentDidMount(){
