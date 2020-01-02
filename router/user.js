@@ -127,7 +127,7 @@ Router.get('/printinvoice/:id', (req, res, next) => {
                         name: user.config.shopName,
                         addressLine1: user.config.addressLine1,
                         addressLine2: user.config.addressLine2,
-                        contact: "7218986846", 
+                        contact: "0000000000", 
                         accDetails: {
                             accNo: 123456789102,
                             bankName: "State Bank Of India",
